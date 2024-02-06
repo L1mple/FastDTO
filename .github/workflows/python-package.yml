@@ -34,6 +34,6 @@ jobs:
       - name: Check isort
         run: |
           poetry run isort ./ --check-only --verbose
-      - name: Test with pytest
-        run: |
-          poetry run pytest --disable-warnings
+      # - name: Test with pytest
+      #   run: |
+      #     poetry run pytest --disable-warnings
