@@ -40,6 +40,10 @@ flake8-annotations-complexity = "^0.0.8"
 flake8-requirements = "^1.7.8"
 pre-commit = "^3.6.0"
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
