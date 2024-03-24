@@ -28,9 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install poetry
           poetry install
-      # - name: Check flake8
-      #   run: |
-      #     poetry run flake8 app --count --show-source --statistics
+      - name: Check flake8
+        run: |
+          poetry run flake8 fastorm --count --show-source --statistics
       - name: Check isort
         run: |
           poetry run isort ./ --check-only --verbose
