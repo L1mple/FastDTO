@@ -1,6 +1,6 @@
 from typer import Argument, Typer
 
-from fastorm.core.codegen.service import init_project_structure
+from fastorm.core.codegen.service import generate_orm_code, init_project_structure
 
 app = Typer()
 
@@ -14,3 +14,20 @@ def init(directory: str = Argument(default="dbschema")):  # noqa: B008
             Defaults to "dbschema".
     """
     init_project_structure(directory=directory)
+
+
+@app.command()
+def generate(
+    filename: str = Argument(default="__init__"),  # noqa: B008
+    scripts_dir: str = Argument(default="dbschema/scripts"),  # noqa: B008
+):
+    """Generates file with ORM functions and Pydantic mapping.
+
+    Args:
+        filename (str, optional): Filename. Defaults to "__init__".
+        scripts_dir (str, required): Directory with .sql scripts.
+    """
+    generate_orm_code(
+        filename=filename,
+        scripts_dir=scripts_dir,
+    )
