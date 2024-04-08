@@ -12,7 +12,10 @@ fastorm = "fastorm.cli.cli:app"
 [tool.poetry.dependencies]
 python = "^3.11"
 typer = "^0.9.0"
+sqlalchemy = {version = "^2.0.29", optional = true}
 
+[tool.poetry.extras]
+sqlalchemy = ["sqlalchemy"]
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^2.2.0"
