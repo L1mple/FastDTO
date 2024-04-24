@@ -1,4 +1,5 @@
 import os
+from io import StringIO
 from pathlib import Path
 from re import sub
 
@@ -44,3 +45,24 @@ def to_camel_case(string: str) -> str:
     """
     string = sub(r"(_|-)+", " ", string).title().replace(" ", "")
     return "".join([string[0].lower(), string[1:]]).capitalize()
+
+
+def append_stringio(target: StringIO, to_append: StringIO) -> StringIO:
+    """Append content of to_append StringIO to another.
+
+    Args:
+        target (StringIO): Main StringIO
+        to_append (StringIO): StringIO object to append.
+
+    Returns:
+        StringIO: Resulting StringIO
+    """
+    result = StringIO()
+    source_position = to_append.tell()
+    to_append.seek(0)
+    contents = to_append.read()
+    to_append.seek(source_position)
+    target.write(contents)
+    target.seek(0)
+    result.write(target.read())
+    return result

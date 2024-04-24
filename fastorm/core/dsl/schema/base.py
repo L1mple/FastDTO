@@ -1,3 +1,4 @@
+from fastorm.common.enums import PythonTypeEnum
 from fastorm.core.dsl.schema.column import Column
 
 
@@ -26,7 +27,10 @@ class Base(metaclass=BaseMeta):
     """Base class for table declaration."""
 
     @classmethod
-    def schema(cls, pythonic: bool = False) -> dict[str, dict[str, str]]:
+    def schema(
+        cls,
+        pythonic: bool = False,
+    ) -> dict[str, dict[str, PythonTypeEnum | str]]:
         """Generates a schema based on table declaration.
 
         Returns:
