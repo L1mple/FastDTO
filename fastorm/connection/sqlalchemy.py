@@ -10,7 +10,7 @@ class SqlAlchemyAsyncExecutor(IAsyncExecutor):
     def __init__(self, connection: AsyncConnection) -> None:
         self.connection = connection
 
-    async def execute(self, query: str) -> list[tuple]:
+    async def execute(self, query: str, **params) -> list[tuple]:
         """Single method to execute query.
 
         Note that order of elements in tuple `must` be
@@ -23,7 +23,7 @@ class SqlAlchemyAsyncExecutor(IAsyncExecutor):
         async with engine.connect() as conn:
             result = await some_generated_func(
                 executor=SqlAlchemyAsyncExecutor(conn),
-                * // your args here
+                ** // your parameters here
             )
         ```
 
@@ -33,4 +33,9 @@ class SqlAlchemyAsyncExecutor(IAsyncExecutor):
         Returns:
             list[tuple]: List that contains result of query if it has result.
         """
-        return (await self.connection.execute(text(query))).fetchall()
+        return (
+            await self.connection.execute(
+                text(query),
+                parameters=params,
+            )
+        ).fetchall()  # type: ignore

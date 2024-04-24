@@ -1,4 +1,5 @@
-from sqlglot.expressions import DataType
+from fastorm.common.enums import ColumnTypeEnum
+from fastorm.common.mappings import TO_PYTHON
 
 
 class Column:
@@ -6,11 +7,13 @@ class Column:
 
     def __init__(
         self,
-        column_type: str | DataType.Type | DataType,
-        python_type: str,
+        column_type: ColumnTypeEnum,
     ):  # TODO extend parameters and change from str to Enum?
         self.column_type = column_type
-        self.python_type = python_type
+        if isinstance(column_type, ColumnTypeEnum):
+            self.python_type = TO_PYTHON[column_type]
+        else:
+            raise Exception  # TODO raise exception if type is not good
 
     @property
     def sql_type(self):
