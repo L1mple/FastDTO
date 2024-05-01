@@ -2,10 +2,12 @@ import re
 from importlib import import_module
 
 from sqlglot import exp, parse_one
+from sqlglot.dialects.postgres import Postgres
 from sqlglot.optimizer.qualify import qualify
 from sqlglot.optimizer.scope import Scope, build_scope
 
 from fastorm.common import dto
+from fastorm.common.enums import PythonTypeEnum
 from fastorm.core.dsl.schema.base import Base
 
 
@@ -22,7 +24,6 @@ def parse_query(query: str) -> dto.ParseResultDTO:
     Returns:
         dto.ParseResultDTO: DTO of ParsedQuery.
     """
-    result = []
     ast = parse_one(query)
     import_module(".dbschema", package="dbschema")  # TODO change for robust
     qualify(
@@ -32,53 +33,27 @@ def parse_query(query: str) -> dto.ParseResultDTO:
         validate_qualify_columns=False,
         quote_identifiers=False,
         identify=False,
+        dialect=Postgres,
     )
-    result_query = ast.sql()
+    result_query = ast.sql(
+        dialect=Postgres,
+    )
     qualify(
         expression=ast,
         schema=Base.schema(),
+        dialect=Postgres,
     )
     root = build_scope(ast)
     if root is None:
         # TODO raise exception
         raise Exception
-    parent_node = next(root.walk())
-    match parent_node:
-        case exp.Select():
-            if not parent_node.parent_select:
-                for column_exp in parent_node.selects:
-                    column: exp.Column = column_exp.this
-                    table_name = _get_table_name(
-                        column=column,
-                        scope=root,
-                    )
-                    result.append(
-                        dto.ColumnDTO(
-                            name=column.name,
-                            table=table_name,
-                            python_type=Base.schema(pythonic=True)
-                            .get(table_name, {})
-                            .get(column.name, ""),  # type: ignore
-                        )
-                    )
+    result_columns = _get_columns_from_scope(scope=root)
     parameters = _parse_parameters(query=query)
     return dto.ParseResultDTO(
         sql_query=result_query,
-        result_columns=result,
+        result_columns=result_columns,
         parameters=parameters,
     )
-
-
-def _get_table_name(column: exp.Column, scope: Scope) -> str:
-    column_source = scope.sources.get(column.table)
-    match column_source:  # noqa
-        case Scope():
-            return _get_table_name(column=column, scope=column_source)
-        case exp.Table():
-            return column_source.name
-        case _:
-            # TODO pretty exc
-            raise Exception
 
 
 def _parse_parameters(query: str) -> list[dto.ParameterDTO]:
@@ -103,3 +78,78 @@ def _parse_parameters(query: str) -> list[dto.ParameterDTO]:
             )
         )
     return parameters
+
+
+def _get_column_type(
+    scope: Scope,
+    column: exp.Expression,
+) -> PythonTypeEnum:
+    """Get pythonic column type from scope.
+
+    Args:
+        root (Scope): Current column Scope.
+        column (exp.Expression): Current column expression.
+        root_sql (exp.Expression): Current root sql query.
+
+    Returns:
+        PythonTypeEnum: Resulting python Enum.
+    """
+    match column:
+        case exp.Column():
+            column_source = scope.sources.get(column.table)
+            match column_source:
+                case exp.Table():
+                    return PythonTypeEnum(
+                        Base.schema(pythonic=True)
+                        .get(column_source.name, {})  # type: ignore
+                        .get(column.name, "any"),
+                    )
+                case Scope():
+                    return next(
+                        filter(
+                            lambda scope_column: scope_column.name == column.name,
+                            _get_columns_from_scope(scope=column_source),
+                        ),
+                        dto.ColumnDTO(name="", python_type=PythonTypeEnum.ANY),
+                    ).python_type
+                case _:
+                    raise Exception  # TODO
+        case exp.Count():
+            return PythonTypeEnum.INT
+        case exp.Avg():
+            return PythonTypeEnum.FLOAT
+        case exp.LogicalAnd() | exp.LogicalOr():
+            return PythonTypeEnum.BOOL
+    return PythonTypeEnum.ANY
+
+
+def _get_columns_from_scope(scope: Scope) -> list[dto.ColumnDTO]:
+    """Get all columns that was selected in scope with their types.
+
+    Types of columns based on schema that User defines in dbschema.py file.
+
+    Args:
+        scope (Scope): Current SQL expression scope.
+
+    Returns:
+        list[dto.ColumnDTO]: List of all selected columns dtos.
+    """
+    result = []
+    parent_node = next(scope.walk())
+    match parent_node:
+        case exp.Select():
+            for column_exp in parent_node.selects:
+                column: exp.Expression = column_exp.this
+                python_type = _get_column_type(
+                    column=column,
+                    scope=scope,
+                )
+                result.append(
+                    dto.ColumnDTO(
+                        name=column_exp.alias_or_name,
+                        python_type=python_type,
+                    )
+                )
+        case _:
+            return []
+    return result
