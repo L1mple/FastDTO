@@ -101,7 +101,7 @@ class PythonTypeEnum(StrEnum):
             case PythonTypeEnum.UUID:
                 return "from uuid import UUID"
             case PythonTypeEnum.ANY:
-                return "from typing import ANY"
+                return "from typing import Any"
             case _:
                 ...
         return ""

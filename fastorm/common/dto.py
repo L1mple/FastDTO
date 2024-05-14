@@ -8,7 +8,6 @@ class ColumnDTO(BaseModel):
 
     name: str
     python_type: PythonTypeEnum
-    table: str
 
 
 class ParameterDTO(BaseModel):
