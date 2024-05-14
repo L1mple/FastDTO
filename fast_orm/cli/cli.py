@@ -1,6 +1,6 @@
 from typer import Argument, Typer
 
-from fastorm.core.codegen.service import generate_orm_code, init_project_structure
+from fast_orm.core.codegen.service import generate_orm_code, init_project_structure
 
 app = Typer()
 

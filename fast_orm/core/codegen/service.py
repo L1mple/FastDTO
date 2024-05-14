@@ -3,11 +3,11 @@ import shutil
 from io import StringIO
 from pathlib import Path
 
-import fastorm.common.errors as errors
-from fastorm.common import dto
-from fastorm.common.errors import FastORMError
-from fastorm.common.utils import append_stringio, to_camel_case, to_snake_case
-from fastorm.core.dsl.parse.service import parse_query
+import fast_orm.common.errors as errors
+from fast_orm.common import dto
+from fast_orm.common.errors import FastORMError
+from fast_orm.common.utils import append_stringio, to_camel_case, to_snake_case
+from fast_orm.core.dsl.parse.service import parse_query
 
 INDENT = "    "
 
@@ -18,9 +18,9 @@ def init_project_structure(directory: str) -> None | FastORMError:
     Returns:
         None | FastORMError: None if all good, Error if smth wrong
     """
-    import fastorm
+    import fast_orm
 
-    package_dir = Path(os.path.abspath(os.path.dirname(fastorm.__file__)))
+    package_dir = Path(os.path.abspath(os.path.dirname(fast_orm.__file__)))
     templates_path = package_dir.joinpath("templates")
     if os.access(directory, os.F_OK) and os.listdir(directory):
         raise errors.DirectoryAlreadyExistsError(
@@ -89,9 +89,9 @@ def _generate_imports(
         for optionat_import in imports_list:
             print(optionat_import, file=import_buffer)
         print("", file=import_buffer)
-    print("from fastorm.connection import IAsyncExecutor", file=import_buffer)
+    print("from fast_orm.connection import IAsyncExecutor", file=import_buffer)
     print(
-        "from fastorm.core.codegen.model import FastORMModel",
+        "from fast_orm.core.codegen.model import FastORMModel",
         end="\n\n\n",
         file=import_buffer,
     )
