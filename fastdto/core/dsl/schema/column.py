@@ -1,5 +1,5 @@
-from fast_orm.common.enums import ColumnTypeEnum
-from fast_orm.common.mappings import TO_PYTHON
+from fastdto.common.enums import ColumnTypeEnum
+from fastdto.common.mappings import TO_PYTHON
 
 
 class Column:

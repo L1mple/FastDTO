@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class FastORMModel(BaseModel):
+class FastDTOModel(BaseModel):
     """BaseMixin for converting tuple to Pydantic Model."""
 
     @classmethod

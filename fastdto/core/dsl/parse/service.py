@@ -6,9 +6,9 @@ from sqlglot.dialects.postgres import Postgres
 from sqlglot.optimizer.qualify import qualify
 from sqlglot.optimizer.scope import Scope, build_scope
 
-from fast_orm.common import dto
-from fast_orm.common.enums import PythonTypeEnum
-from fast_orm.core.dsl.schema.base import Base
+from fastdto.common import dto
+from fastdto.common.enums import PythonTypeEnum
+from fastdto.core.dsl.schema.base import Base
 
 
 def parse_query(query: str) -> dto.ParseResultDTO:
