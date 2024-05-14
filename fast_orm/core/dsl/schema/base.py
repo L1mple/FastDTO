@@ -1,5 +1,5 @@
-from fastorm.common.enums import PythonTypeEnum
-from fastorm.core.dsl.schema.column import Column
+from fast_orm.common.enums import PythonTypeEnum
+from fast_orm.core.dsl.schema.column import Column
 
 
 class BaseMeta(type):

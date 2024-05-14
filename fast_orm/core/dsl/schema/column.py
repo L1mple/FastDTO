@@ -1,5 +1,5 @@
-from fastorm.common.enums import ColumnTypeEnum
-from fastorm.common.mappings import TO_PYTHON
+from fast_orm.common.enums import ColumnTypeEnum
+from fast_orm.common.mappings import TO_PYTHON
 
 
 class Column:
