@@ -1,3 +1,3 @@
 from .cli.cli import app
 
-app(prog_name="fastorm")
+app(prog_name="fastdto")

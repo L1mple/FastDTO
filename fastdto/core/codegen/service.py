@@ -3,24 +3,24 @@ import shutil
 from io import StringIO
 from pathlib import Path
 
-import fast_orm.common.errors as errors
-from fast_orm.common import dto
-from fast_orm.common.errors import FastORMError
-from fast_orm.common.utils import append_stringio, to_camel_case, to_snake_case
-from fast_orm.core.dsl.parse.service import parse_query
+import fastdto.common.errors as errors
+from fastdto.common import dto
+from fastdto.common.errors import FastDTOError
+from fastdto.common.utils import append_stringio, to_camel_case, to_snake_case
+from fastdto.core.dsl.parse.service import parse_query
 
 INDENT = "    "
 
 
-def init_project_structure(directory: str) -> None | FastORMError:
+def init_project_structure(directory: str) -> None | FastDTOError:
     """Create directory and files for DB schema.
 
     Returns:
-        None | FastORMError: None if all good, Error if smth wrong
+        None | FastDTOError: None if all good, Error if smth wrong
     """
-    import fast_orm
+    import fastdto
 
-    package_dir = Path(os.path.abspath(os.path.dirname(fast_orm.__file__)))
+    package_dir = Path(os.path.abspath(os.path.dirname(fastdto.__file__)))
     templates_path = package_dir.joinpath("templates")
     if os.access(directory, os.F_OK) and os.listdir(directory):
         raise errors.DirectoryAlreadyExistsError(
@@ -35,7 +35,7 @@ def init_project_structure(directory: str) -> None | FastORMError:
         ) from exc
 
 
-def generate_orm_code(filename: str, scripts_dir: str) -> None | FastORMError:
+def generate_orm_code(filename: str, scripts_dir: str) -> None | FastDTOError:
     """Generates file that contains scripts with DTO mapping.
 
     Args:
@@ -43,7 +43,7 @@ def generate_orm_code(filename: str, scripts_dir: str) -> None | FastORMError:
         scripts_dir (str): Directory that has .sql files
 
     Returns:
-        None | FastORMError: None if all good, Error if smth wrong
+        None | FastDTOError: None if all good, Error if smth wrong
     """
     buf = StringIO()
     optional_imports = set()
@@ -89,9 +89,9 @@ def _generate_imports(
         for optionat_import in imports_list:
             print(optionat_import, file=import_buffer)
         print("", file=import_buffer)
-    print("from fast_orm.connection import IAsyncExecutor", file=import_buffer)
+    print("from fastdto.connection import IAsyncExecutor", file=import_buffer)
     print(
-        "from fast_orm.core.codegen.model import FastORMModel",
+        "from fastdto.core.codegen.model import FastDTOModel",
         end="\n\n\n",
         file=import_buffer,
     )
@@ -189,7 +189,7 @@ def _generate_dto_for_query(
         buffer (StringIO): Buffer with file content.
         parsed_query (dto.ParseResultDTO): DTO with parsed query and metadata.
     """
-    print(f"class {to_camel_case(name)}Result(FastORMModel):", file=buffer)
+    print(f"class {to_camel_case(name)}Result(FastDTOModel):", file=buffer)
     for column in parsed_query.result_columns:
         print(f"{INDENT}{column.name}: {column.python_type}", file=buffer)
     print(end="\n\n", file=buffer)

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from fast_orm.common.enums import PythonTypeEnum
+from fastdto.common.enums import PythonTypeEnum
 
 
 class ColumnDTO(BaseModel):

@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio.engine import AsyncConnection
 
-from fast_orm.connection.interface import IAsyncExecutor
+from fastdto.connection.interface import IAsyncExecutor
 
 
 class SqlAlchemyAsyncExecutor(IAsyncExecutor):

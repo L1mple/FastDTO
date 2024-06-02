@@ -1,4 +1,4 @@
-from fast_orm.common.enums import ColumnTypeEnum, PythonTypeEnum
+from fastdto.common.enums import ColumnTypeEnum, PythonTypeEnum
 
 TO_PYTHON = {
     ColumnTypeEnum.BIGINT: PythonTypeEnum.INT,
