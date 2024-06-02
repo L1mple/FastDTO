@@ -44,10 +44,10 @@ def parse_query(query: str) -> dto.ParseResultDTO:
         dialect=Postgres,
     )
     root = build_scope(ast)
-    if root is None:
-        # TODO raise exception
-        raise Exception
-    result_columns = _get_columns_from_scope(scope=root)
+
+    result_columns = []
+    if root:
+        result_columns = _get_columns_from_scope(scope=root)
     parameters = _parse_parameters(query=query)
     return dto.ParseResultDTO(
         sql_query=result_query,
@@ -120,6 +120,8 @@ def _get_column_type(
             return PythonTypeEnum.FLOAT
         case exp.LogicalAnd() | exp.LogicalOr():
             return PythonTypeEnum.BOOL
+        case exp.Concat() | exp.Upper() | exp.Lower():
+            return PythonTypeEnum.STR
     return PythonTypeEnum.ANY
 
 
@@ -143,6 +145,20 @@ def _get_columns_from_scope(scope: Scope) -> list[dto.ColumnDTO]:
                 python_type = _get_column_type(
                     column=column,
                     scope=scope,
+                )
+                result.append(
+                    dto.ColumnDTO(
+                        name=column_exp.alias_or_name,
+                        python_type=python_type,
+                    )
+                )
+        case exp.Union() | exp.Except() | exp.Intersect():
+            left_scope = build_scope(parse_one(parent_node.left.sql()))
+            for column_exp in parent_node.selects:
+                column: exp.Expression = column_exp.this
+                python_type = _get_column_type(
+                    column=column,
+                    scope=left_scope,
                 )
                 result.append(
                     dto.ColumnDTO(

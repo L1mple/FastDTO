@@ -43,8 +43,7 @@ def to_camel_case(string: str) -> str:
     Returns:
         str: Camelcased string.
     """
-    string = sub(r"(_|-)+", " ", string).title().replace(" ", "")
-    return "".join([string[0].lower(), string[1:]]).capitalize()
+    return sub(r"(_|-)+", " ", string).title().replace(" ", "")
 
 
 def append_stringio(target: StringIO, to_append: StringIO) -> StringIO:
