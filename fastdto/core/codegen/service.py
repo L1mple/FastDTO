@@ -156,11 +156,12 @@ def _generate_body(
     for parameter in parsed_query.parameters:
         print(f"{INDENT * 2}{parameter.name}={parameter.name},", file=buffer)
     print(f"{INDENT})", file=buffer)
-    print(
-        f"{INDENT}return [{to_camel_case(name)}Result.from_list(row) for row in result]",  # noqa:E501
-        end="\n\n\n",
-        file=buffer,
-    )
+    if parsed_query.result_columns:
+        print(
+            f"{INDENT}return [{to_camel_case(name)}Result.from_list(row) for row in result]",  # noqa:E501
+            file=buffer,
+        )
+    print(end="\n\n", file=buffer)
     return buffer
 
 
@@ -173,7 +174,11 @@ def _generate_signature(
     print(f"{INDENT}executor: IAsyncExecutor,", file=buffer)
     for parameter in parsed_query.parameters:
         print(f"{INDENT}{parameter.name}: {parameter.parameter_type},", file=buffer)
-    print(f") -> list[{to_camel_case(name)}Result]:", file=buffer)
+
+    if parsed_query.result_columns:
+        print(f") -> list[{to_camel_case(name)}Result]:", file=buffer)
+    else:
+        print(") -> None:", file=buffer)
     return buffer
 
 
@@ -189,6 +194,9 @@ def _generate_dto_for_query(
         buffer (StringIO): Buffer with file content.
         parsed_query (dto.ParseResultDTO): DTO with parsed query and metadata.
     """
+    if not parsed_query.result_columns:
+        return buffer
+
     print(f"class {to_camel_case(name)}Result(FastDTOModel):", file=buffer)
     for column in parsed_query.result_columns:
         print(f"{INDENT}{column.name}: {column.python_type}", file=buffer)
