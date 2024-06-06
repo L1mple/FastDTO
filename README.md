@@ -95,9 +95,9 @@ async def my_query(
 
 Let's break it down.
 
-- 1. `MyQueryResult` is [Pydantic](https://docs.pydantic.dev/latest/) BaseModel subclass with just one extra method `from_list`, defined by `FastDTOModel` class.
-- 2. `my_query` is a async Python function that takes our query and executes its in database.
-- 3. `IAsyncExecutor` - interface with 1 method - `execute`, provided by FastDTO. You can use predefined executors like SQLAlchemy or write one by yourself.
+ 1. `MyQueryResult` is [Pydantic](https://docs.pydantic.dev/latest/) BaseModel subclass with just one extra method `from_list`, defined by `FastDTOModel` class.
+ 2. `my_query` is a async Python function that takes our query and executes its in database.
+ 3. `IAsyncExecutor` - interface with 1 method - `execute`, provided by FastDTO. You can use predefined executors like SQLAlchemy or write one by yourself.
 
 ## Using functions
 
@@ -127,6 +127,6 @@ asyncio.run(main())
 ```
 
 
-## Licanse
+## License
 
 FastDTO is distributed under the [MIT license](https://opensource.org/license/MIT).
