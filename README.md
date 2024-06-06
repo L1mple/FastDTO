@@ -13,7 +13,7 @@ pip install fastdto
 or poetry:
 
 ```sh
-poetry install fastdto
+poetry add fastdto
 ```
 
 ## Getting started
